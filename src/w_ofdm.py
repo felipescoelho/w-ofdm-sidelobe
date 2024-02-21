@@ -10,6 +10,7 @@ Feb 19, 2024
 import numpy as np
 from numba import njit
 from utils import gen_symbols, awgn, decision, vect_ov
+from channel_modeling import gen_chan
 
 
 def simulation_fun(**kwargs):
@@ -24,7 +25,7 @@ def simulation_fun(**kwargs):
     -------
     """
 
-    
+    channel_model = gen_chan('VehicularA', 20, )
     ofdm_model = wOFDM(**kwargs)
     ofdm_model.run_simulation()
 

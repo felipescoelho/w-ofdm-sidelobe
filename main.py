@@ -12,7 +12,9 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from multiprocessing import cpu_count, Pool
 from src.window_manipulation import gen_win, reshape_win
+from src.w_ofdm import simulation_fun
 
 
 def arg_parser():
@@ -33,6 +35,8 @@ def arg_parser():
                         help='Window type for initial coefficients.',
                         choices=['bartlett', 'blackman', 'hamming', 'hanning',
                                  'kaiser', 'hann', 'rect'], default='blackman')
+    parser.add_argument('--parallel', action=argparse.BooleanOptionalAction,
+                        help='Wanna do some parallel computing?')
     args = parser.parse_args()
 
     return args
@@ -106,9 +110,14 @@ if __name__ == '__main__':
             win_path = os.path.join(window_folder,
                                     f'win_{Gi_sf}_{win_len}.npy')
             
-
         case 'run_sim':
-            pass
+            data_list = []
+            if args.parallel:
+                with Pool(cpu_count()) as pool:
+                    pool.map(simulation_fun, data_list)
+            else:
+                [simulation_fun(data) for data in data_list]
+
         case 'gen_figs':
             pass
             
