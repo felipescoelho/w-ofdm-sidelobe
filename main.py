@@ -13,6 +13,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from multiprocessing import cpu_count, Pool
+from scipy.constants import speed_of_light
 from src.window_manipulation import gen_win, reshape_win
 from src.w_ofdm import simulation_fun
 
@@ -35,6 +36,8 @@ def arg_parser():
                         help='Window type for initial coefficients.',
                         choices=['bartlett', 'blackman', 'hamming', 'hanning',
                                  'kaiser', 'hann', 'rect'], default='blackman')
+    parser.add_argument('--snr', type=str, default='-21,51,3',
+                        help='SNR for the simulation. ([start, ]stop, [step).')
     parser.add_argument('--parallel', action=argparse.BooleanOptionalAction,
                         help='Wanna do some parallel computing?')
     args = parser.parse_args()
@@ -58,6 +61,16 @@ if __name__ == '__main__':
     os.makedirs(window_folder, exist_ok=True)
     print(f'Run w-OFDM using:\nREDUNDANCY:{red_len} -- CP:{cp_len}, CS:{cs_len}.')
     print(f'Overlap and add: {beta} samples.')
+    carrier_frequency = 2*1e9
+    sampling_period = 200*1e-9
+    velocity = 120/3.6
+    no_samples = 21
+    no_symbols = 16
+    dft_length = 256
+    symbol_duration = dft_length*sampling_period
+    frame_duration = no_symbols*symbol_duration
+    doppler_frequency = (velocity/speed_of_light)*carrier_frequency
+    snr_arr = np.arange(*[int(val) for val in args.snr.split(',')])
 
     match args.mode:
         case 'gen_win':
@@ -111,7 +124,8 @@ if __name__ == '__main__':
                                     f'win_{Gi_sf}_{win_len}.npy')
             
         case 'run_sim':
-            data_list = []
+
+            data_list = [() for snr in snr_arr]
             if args.parallel:
                 with Pool(cpu_count()) as pool:
                     pool.map(simulation_fun, data_list)

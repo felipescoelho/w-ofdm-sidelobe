@@ -13,20 +13,22 @@ from utils import gen_symbols, awgn, decision, vect_ov
 from channel_modeling import gen_chan
 
 
-def simulation_fun(**kwargs):
+def simulation_fun(args: tuple):
     """Method to run simulation using our wOFDM class and parallel
     computing if needed.
     
     Parameters
     ----------
-    Keyword Arguments:
+    args : tuple
+        Tuple containing arguments.
     
     Returns
     -------
     """
 
-    channel_model = gen_chan('VehicularA', 20, )
-    ofdm_model = wOFDM(**kwargs)
+    channel_model = gen_chan('VehicularA', 21, args[5], args[6], args[7], 1)
+    ofdm_model = wOFDM(dft_len=args[0], cp_len=args[1], cs_len=args[2],
+                       overlap_len=args[3], mod_size=args[4])
     ofdm_model.run_simulation()
 
 
