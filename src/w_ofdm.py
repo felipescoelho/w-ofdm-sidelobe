@@ -9,8 +9,8 @@ Feb 19, 2024
 
 import numpy as np
 from numba import njit
-from utils import gen_symbols, awgn, decision, vect_ov
-from channel_modeling import gen_chan
+from .utils import gen_symbols, awgn, decision, vect_ov
+from .channel_modeling import gen_chan
 
 
 def simulation_fun(args: tuple):

@@ -29,7 +29,7 @@ def arg_parser():
     parser.add_argument('-cs', '--cs_len', type=float, default=1/4,
                         help='Length of CS as a percentage of the CP length.',
                         choices=[1/2, 1/4, 1/8, 1/16, 0])
-    parser.add_argument('--beta', type=float, default=.5,
+    parser.add_argument('--beta', type=float, default=1/2,
                         help='Length of overlap and add as a ratio of redundancy',
                         choices=[1/2, 1/4, 1/8, 1/16])
     parser.add_argument('-win_type', '--window_type', type=str,
@@ -74,7 +74,6 @@ if __name__ == '__main__':
 
     match args.mode:
         case 'gen_win':
-            # beta = 100
             Gi_sf = 40
             win_arr, win_init = gen_win(args.window_type, int(2*beta)+1, Gi_sf,
                                         3, .3)
@@ -84,7 +83,6 @@ if __name__ == '__main__':
             win_reshape = np.hstack((win_arr[:beta],
                                      np.ones((win_len-int(2*beta),)),
                                      win_arr[-beta:]))
-            mm = 50
             win_reshape2 = reshape_win(win_original, Gi_sf, 3, .3)
             win_arr_freq = np.fft.fft(win_arr,
                                       fft_len_plot)[:int(fft_len_plot/2)]
